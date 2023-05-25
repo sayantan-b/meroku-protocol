@@ -10,3 +10,5 @@ artifacts
 .openzeppelin
 .solhint.json.env
 .DS_Store
+.env
+.vscode

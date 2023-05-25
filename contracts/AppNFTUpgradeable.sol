@@ -154,9 +154,10 @@ contract AppNFTUpgradeable is Initializable, ERC721Upgradeable, ERC721Enumerable
      * @notice mints new .app NFT
      * @dev checks validations for app name and emit AppNameSet event on successful minting
      * @param to the address to mint the token to
+     * @param uri the uri to set for the token
      * @param appName the name of app to set for the token
      */
-    function safeMintAppNFT(address to, string calldata appName) external whenNotPaused {
+    function safeMintAppNFT(address to, string memory uri, string calldata appName) external whenNotPaused {
         if(!mintManyFlag){
             require(balanceOf(to)==0, "provided wallet already used to create app");
         }
@@ -169,7 +170,7 @@ contract AppNFTUpgradeable is Initializable, ERC721Upgradeable, ERC721Enumerable
             require(mintSpecialFlag, "Minting of such names is restricted currently");
         }
 
-        mint(to, "", validatedAppName);
+        mint(to, uri, validatedAppName);
     }
 
     /**
@@ -380,7 +381,7 @@ contract AppNFTUpgradeable is Initializable, ERC721Upgradeable, ERC721Enumerable
     function supportsInterface(bytes4 interfaceId)
         public
         view
-        override(ERC721Upgradeable, ERC721EnumerableUpgradeable)
+        override(ERC721Upgradeable, ERC721EnumerableUpgradeable, ERC721URIStorageUpgradeable)
         returns (bool)
     {
         return super.supportsInterface(interfaceId);

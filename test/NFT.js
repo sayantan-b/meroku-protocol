@@ -100,10 +100,10 @@ describe(".app & .dev NFT minting", function () {
     await devNFT
       .connect(account1)
       .safeMintDevNFT(account1.address, devName.account1);
-    await appNFT.safeMintAppNFT(owner.address, appName.owner);
+    await appNFT.safeMintAppNFT(owner.address, app_uri, appName.owner);
     await appNFT
       .connect(account1)
-      .safeMintAppNFT(account1.address, appName.account1);
+      .safeMintAppNFT(account1.address, app_uri, appName.account1);
   }
 
   describe("Deployment", function () {
@@ -287,7 +287,7 @@ describe(".app & .dev NFT minting", function () {
         await expect(
           appNFT
             .connect(account1)
-            .safeMintAppNFT(account1.address, appName.account1)
+            .safeMintAppNFT(account1.address, app_uri, appName.account1)
         ).not.to.be.reverted;
       });
 
@@ -298,7 +298,7 @@ describe(".app & .dev NFT minting", function () {
         await expect(
           appNFT
             .connect(account1)
-            .safeMintAppNFT(account1.address, appName.account1)
+            .safeMintAppNFT(account1.address, app_uri, appName.account1)
         ).not.to.be.reverted;
       });
 
@@ -320,12 +320,12 @@ describe(".app & .dev NFT minting", function () {
         await expect(
           appNFT
             .connect(account1)
-            .safeMintAppNFT(account1.address, appName.account1)
+            .safeMintAppNFT(account1.address, app_uri, appName.account1)
         );
         await expect(
           appNFT
             .connect(account1)
-            .safeMintAppNFT(account1.address, appName.account1)
+            .safeMintAppNFT(account1.address, app_uri, appName.account1)
         ).to.be.revertedWith("provided wallet already used to create app");
       });
 
@@ -348,13 +348,13 @@ describe(".app & .dev NFT minting", function () {
         await expect(
           appNFT
             .connect(account1)
-            .safeMintAppNFT(account1.address, appName.account1)
+            .safeMintAppNFT(account1.address, app_uri, appName.account1)
         );
 
         await expect(
           appNFT
             .connect(account1)
-            .safeMintAppNFT(account1.address, "secondName")
+            .safeMintAppNFT(account1.address, app_uri, "secondName")
         ).not.to.be.reverted;
         expect(await appNFT.tokensName(1)).to.equal(
           `${appNameLower.account1}.app`
@@ -393,7 +393,7 @@ describe(".app & .dev NFT minting", function () {
         await expect(
           appNFT
             .connect(otherAccount)
-            .safeMintAppNFT(otherAccount.address, appName.owner)
+            .safeMintAppNFT(otherAccount.address, app_uri, appName.owner)
         ).to.be.revertedWith("ERC721NameStorage: this Name already in use");
       });
 
@@ -426,7 +426,7 @@ describe(".app & .dev NFT minting", function () {
         await expect(
           appNFT
             .connect(otherAccount)
-            .safeMintAppNFT(otherAccount.address, "XX")
+            .safeMintAppNFT(otherAccount.address, app_uri, "XX")
         ).to.be.revertedWith("Minting of such names is restricted currently");
       });
 
@@ -460,7 +460,7 @@ describe(".app & .dev NFT minting", function () {
         await expect(
           appNFT
             .connect(otherAccount)
-            .safeMintAppNFT(otherAccount.address, "XX")
+            .safeMintAppNFT(otherAccount.address, app_uri, "XX")
         ).not.to.be.reverted;
         expect(await appNFT.tokensName(3)).to.equal("xx.app");
       });
@@ -487,7 +487,7 @@ describe(".app & .dev NFT minting", function () {
         await expect(
           appNFT
             .connect(otherAccount)
-            .safeMintAppNFT(otherAccount.address, specialdAppNames[1])
+            .safeMintAppNFT(otherAccount.address, app_uri, specialdAppNames[1])
         ).to.be.revertedWith("App name reserved");
       });
 
@@ -522,7 +522,7 @@ describe(".app & .dev NFT minting", function () {
         await expect(
           appNFT
             .connect(otherAccount)
-            .safeMintAppNFT(otherAccount.address, specialdAppNames[1])
+            .safeMintAppNFT(otherAccount.address, app_uri, specialdAppNames[1])
         ).not.to.be.reverted;
         expect(await appNFT.tokensName(3)).to.equal(`${specialdAppNames[1]}`);
       });
@@ -554,7 +554,7 @@ describe(".app & .dev NFT minting", function () {
         await expect(
           appNFT
             .connect(otherAccount)
-            .safeMintAppNFT(otherAccount.address, "mint.domain")
+            .safeMintAppNFT(otherAccount.address, app_uri, "mint.domain")
         ).to.be.revertedWith("Error: Subdomain or space found");
       });
 
@@ -585,13 +585,13 @@ describe(".app & .dev NFT minting", function () {
         await expect(
           appNFT
             .connect(otherAccount)
-            .safeMintAppNFT(otherAccount.address, "MyFirstAppName")
+            .safeMintAppNFT(otherAccount.address, app_uri, "MyFirstAppName")
         ).not.to.be.reverted;
 
         await expect(
           appNFT
             .connect(otherAccount)
-            .safeMintAppNFT(otherAccount.address, "MySecondAppName.app")
+            .safeMintAppNFT(otherAccount.address, app_uri, "MySecondAppName.app")
         ).not.to.be.reverted;
 
         await expect(await appNFT.tokensName(3)).to.equal(`myfirstappname.app`);
@@ -628,7 +628,7 @@ describe(".app & .dev NFT minting", function () {
         await expect(
           appNFT
             .connect(otherAccount)
-            .safeMintAppNFT(otherAccount.address, "mint my domain")
+            .safeMintAppNFT(otherAccount.address, app_uri, "mint my domain")
         ).to.be.revertedWith("Error: Subdomain or space found");
       });
     });

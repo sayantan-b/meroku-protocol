@@ -297,6 +297,7 @@ contract AppNFTUpgradeable is Initializable, ERC721Upgradeable, ERC721Enumerable
     function updateTokenURI(uint256 _tokenID, string memory _tokenURI) external whenNotExpired(_tokenID) {
         require(_isApprovedOrOwner(_msgSender(), _tokenID), "ERC721: caller is not owner nor approved");
         _setTokenURI(_tokenID, _tokenURI);
+        emit MetadataUpdate(_tokenID);
         emit UpdatedTokenURI(_tokenID, _tokenURI);
     }
 

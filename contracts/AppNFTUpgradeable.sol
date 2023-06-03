@@ -64,6 +64,12 @@ contract AppNFTUpgradeable is Initializable, ERC721Upgradeable, ERC721Enumerable
     //string variable for storing the schema URI
     string public schemaURI;
 
+
+    // upgrades
+    uint128 public mint_fees;    // fees to mint a new app name in wei
+    // flag to check if the minting is paid or not
+    bool public payForMintFlag;
+
     /// @custom:oz-upgrades-unsafe-allow constructor    
     constructor() {
         _disableInitializers();
@@ -87,6 +93,8 @@ contract AppNFTUpgradeable is Initializable, ERC721Upgradeable, ERC721Enumerable
         _setTrustedForwarder(trustedForwarder_);
         checkDappNamesListFlag=true;
         _tokenIdCounter.increment();//because we want it to start NFT list index from 1 & not 0
+        mint_fees = 1000000000000000000;
+        payForMintFlag = true;
     }
 
     /**
@@ -157,7 +165,12 @@ contract AppNFTUpgradeable is Initializable, ERC721Upgradeable, ERC721Enumerable
      * @param uri the uri to set for the token
      * @param appName the name of app to set for the token
      */
-    function safeMintAppNFT(address to, string memory uri, string calldata appName) external whenNotPaused {
+    function safeMintAppNFT(address to, string memory uri, string calldata appName) external payable whenNotPaused {
+
+        if(payForMintFlag){
+            require(msg.value >= mint_fees, "Insufficient mint fee");
+        }
+
         if(!mintManyFlag){
             require(balanceOf(to)==0, "provided wallet already used to create app");
         }
@@ -269,6 +282,15 @@ contract AppNFTUpgradeable is Initializable, ERC721Upgradeable, ERC721Enumerable
         checkDappNamesListFlag = _checkDappNamesListFlag;
     }
 
+    /**
+     * @notice toggles payForMintFlag by onlyOwner
+     * @dev this flag is used to check if the app name mint is paid or not
+     * @param _payForMintFlag bool value to set the flag
+     */
+    function setPayForMintFlag(bool _payForMintFlag) external onlyOwner {
+        payForMintFlag = _payForMintFlag;
+    }
+
 
     /**
      * @notice set platform trading_fees percentage for the sale of .app NFT
@@ -286,6 +308,15 @@ contract AppNFTUpgradeable is Initializable, ERC721Upgradeable, ERC721Enumerable
      */
     function setRenewFees(uint128 _new_renew_fees) external onlyOwner {
         renew_fees = _new_renew_fees;
+    }
+
+    /**
+     * @notice set platform mint_fees for the mint of .app NFT
+     * @dev this is the fees taken to mint a .app NFT
+     * @param _new_mint_fees uint128 value which is fees in MATIC
+     */
+    function setMintFees(uint128 _new_mint_fees) external onlyOwner {
+        mint_fees = _new_mint_fees;
     }
 
     /**

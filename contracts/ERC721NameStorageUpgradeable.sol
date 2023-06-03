@@ -42,7 +42,7 @@ abstract contract ERC721NameStorageUpgradeable is Initializable, ERC721Upgradeab
         uint256 length = nameBytes.length;
         bytes memory nameBytesLower = new bytes(length);
         for(uint256 i=0; i < length; i++){
-            if(nameBytes[i] == '.' || nameBytes[i] == 0x20){
+            if(nameBytes[i] == '.' || nameBytes[i] == 0x20 || nameBytes[i] == 0x09){
                 revert("Error: Subdomain or space found");
             }else{
                 if ((uint8(nameBytes[i]) >= 65) && (uint8(nameBytes[i]) <= 90)) {

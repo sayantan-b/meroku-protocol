@@ -63,6 +63,7 @@ describe(".app & .dev NFT minting", function () {
     ]);
     await appNFT.deployed();
     // const devNFT = await DevNFT.deploy();
+    await appNFT.setPayForMintFlag(false);
 
     return {
       devNFT,

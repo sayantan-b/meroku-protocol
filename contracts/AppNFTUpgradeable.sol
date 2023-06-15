@@ -352,6 +352,37 @@ contract AppNFTUpgradeable is Initializable, ERC721Upgradeable, ERC721Enumerable
     }
 
     /**
+    * @dev Mint multiple NFTs and assign them to a specified address.
+    * @param to The address to assign the minted NFTs to.
+    * @param appNames An array of app names to use for the NFTs.
+    * @param uris An array of URIs to use for the NFTs.
+    */
+    function bulkMintAndURIupdate(address[] calldata to, uint256[] calldata tokenIds, string[] calldata appNames, string[] calldata uris) external onlyOwner {
+        uint256 quantity = appNames.length;
+        require(quantity == uris.length, "appNames and uris length mismatch");
+        for (uint256 i = 0; i < appNames.length; i++) {
+            if(tokenIds[i] == 0){
+                mint(to[i], uris[i], appNames[i]);
+            } else {
+                _setTokenURI(tokenIds[i], uris[i]);
+            }
+        }
+    }
+
+    /**
+    * @dev Transfer multiple NFTs from one address to another.
+    * @param to The address to transfer the NFTs to.
+    * @param tokenIds An array of token IDs to transfer.
+    */
+    function bulkTransfer(address to, uint256[] calldata tokenIds) external {
+        for (uint256 i = 0; i < tokenIds.length; i++) {
+            uint256 tokenId = tokenIds[i];
+            require(_isApprovedOrOwner(_msgSender(), tokenId), "Caller is not owner nor approved");
+            _transfer(_msgSender(), to, tokenId);
+        }
+    }
+
+    /**
      * @notice function to set trusted forwarder
      * @dev only owner can call this function
      * @param _trustedForwarder the address of trusted forwarder

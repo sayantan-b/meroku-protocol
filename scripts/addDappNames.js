@@ -1,6 +1,8 @@
 const { ethers } = require("hardhat");
 const contractAddress = require("./config.json");
-const { names } = require("./reservedDappNames.json");
+const appName = require("./reservedDappNames.json");
+const devName = require("./reservedDevNames.json");
+const appStoreName = require("./reservedAppStoreNames.json");
 
 async function addDappNames(names) {
   try {
@@ -14,24 +16,46 @@ async function addDappNames(names) {
     );
     return await dappNameList.setDappNames(names);
   } catch (err) {
-    console.log("addDappNames error: ", err);
+    console.log("adding Names error: ", err);
   }
 }
 
 async function main() {
-  console.log("adding list of dapp names");
+  console.log("adding list of names");
   const signer = await ethers.getSigner();
   console.log("signer: ", signer.address);
 
   try {
+
     const startIndex = 2900;
     const stopIndex = 3100;
+    const name = '.appStore'
 
-    console.log("startIndex: ", startIndex);
-    let appNameList = names.slice(startIndex, stopIndex);
-    console.log("appNameList Length: ", appNameList.length);
+    if(name == '.appStore'){
+      console.log("startIndex: ", startIndex);
+      let appStoreNameList = appStoreName.names.slice(startIndex, stopIndex);
+      console.log("appStoreNameList Length: ", appStoreNameList.length);
+      console.log(await addDappNames(appStoreNameList));
 
-    console.log(await addDappNames(appNameList));
+    } else if(name == '.app'){
+      console.log("startIndex: ", startIndex);
+      let appNameList = appName.names.slice(startIndex, stopIndex);
+      console.log("appNameList Length: ", appNameList.length);
+      console.log(await addDappNames(appNameList));
+
+    } else if(name == '.dev'){
+      console.log("startIndex: ", startIndex);
+      let devNameList = devName.names.slice(startIndex, stopIndex);
+      console.log("devNameList Length: ", devNameList.length);
+      console.log(await addDappNames(devNameList));
+
+    }  else {
+      console.log("Invalid name");
+      return;
+    }
+
+
+
 
     // const [deployer] = await ethers.getSigners();
     // const DappNameListAddress = contractAddress.DappNameList

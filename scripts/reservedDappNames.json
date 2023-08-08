@@ -4145,6 +4145,7 @@
     "zigzag-exchange.app",
     "zksync-wallet.app",
     "co-nftdomains.app",
-    "unilend-testnet.app"
+    "unilend-testnet.app",
+    "swapper-app.app"
   ]
 }

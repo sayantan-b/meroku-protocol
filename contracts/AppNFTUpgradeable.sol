@@ -35,6 +35,7 @@ contract AppNFTUpgradeable is Initializable, ERC721Upgradeable, ERC721Enumerable
     event AppNameSet(address indexed owner, uint256 indexed tokenId, string appName, string uri);
     event SaleCreated(uint256 indexed tokenId, uint256 price);
     event UpdatedTokenURI(uint256 indexed tokenId, string uri);
+    event ReviewSubmitted(uint256 indexed tokenId, address indexed reviewer, uint256 rating, uint256 timestamp, string reviewLink);
     
     uint128 public trading_fees;  // fees percentage in Gwei ex 2Gwei = 2%
     uint128 public renew_fees;    // fees in wei
@@ -69,6 +70,23 @@ contract AppNFTUpgradeable is Initializable, ERC721Upgradeable, ERC721Enumerable
     uint128 public mint_fees;    // fees to mint a new app name in wei
     // flag to check if the minting is paid or not
     bool public payForMintFlag;
+
+    // structure that will store rating, timestamp & reviewLink
+    struct Review {
+        uint128 rating;
+        uint128 timestamp;
+        string reviewLink;
+    }
+    struct RatingData {
+        uint128 totalRating;
+        uint128 totalCount;
+    }
+
+    // mapping for storing reviews structure for tokenId and reviewAddress
+    mapping(uint256 => mapping(address => Review)) private appReview; 
+
+    mapping(uint256 => RatingData) public ratingsData;
+    uint256 constant public RATING_PRECISION = 1000000;
 
     /// @custom:oz-upgrades-unsafe-allow constructor    
     constructor() {
@@ -339,6 +357,67 @@ contract AppNFTUpgradeable is Initializable, ERC721Upgradeable, ERC721Enumerable
      */
     function setSchemaURI(string memory _schemaURI) external onlyOwner {
         schemaURI = _schemaURI;
+    }
+
+    /**
+     * @notice submits the reviews for the given token ID by function caller
+     * @dev checks rating range emits ReviewSubmitted event after updating average rating
+     * @param tokenId uint256 token ID to submit the rating/reviews for
+     * @param rating uint128 ranging between 1 & 5
+     * @param reviewLink string URI where reviews stored
+     */
+    function submitReview(uint256 tokenId, uint128 rating, string memory reviewLink) public {
+        require(rating >= 1 && rating <= 5, "Invalid rating"); // Assuming rating ranges from 1 to 5
+
+        // Update the avg rating of this tokenId ie .app
+        updateAverageRating(tokenId, appReview[tokenId][msg.sender].rating, rating);
+
+        // Create a new structReview
+        Review memory newReview = Review({
+            rating: rating,
+            timestamp: uint128(block.timestamp),
+            reviewLink: reviewLink
+        });
+
+        // Add the newReview to the mapping
+        appReview[tokenId][msg.sender] = newReview;
+
+        // Emit the event
+        emit ReviewSubmitted(tokenId, msg.sender, rating, block.timestamp, reviewLink);
+    }
+
+    /**
+     * @notice Function to get specific reviewDetails for a given NFT tokenId and reviewer address
+     * @param tokenId uint256 token ID to get the rating/reviews for
+     * @param reviewer address of reviewer
+     * @return rating uint128 rating points 
+     * @return timestamp uint128 time at which rating was posted
+     * @return reviewLink string uri where reviewContent is stored
+     */
+    function getReview(uint256 tokenId, address reviewer) public view returns (uint128, uint128, string memory) {
+        Review memory review = appReview[tokenId][reviewer];
+        return (review.rating, review.timestamp, review.reviewLink);
+    }
+
+    function updateAverageRating(uint256 tokenId, uint128 oldRating, uint128 newRating) internal {
+        if(oldRating == 0){
+            // first time rating
+            ratingsData[tokenId].totalRating += newRating;
+            ratingsData[tokenId].totalCount += 1;
+        }else{
+            // not first time rating
+            ratingsData[tokenId].totalRating = ratingsData[tokenId].totalRating + newRating - oldRating;
+        }
+    }
+
+    /**
+     * @notice Function to get average rating for specific tokenId
+     * @param tokenId uint256 token ID to get the average rating for
+     * @return avgRating uint256 totalRating/totalCount
+     */
+    function getAverageRating(uint256 tokenId) public view returns (uint256) {
+        if (ratingsData[tokenId].totalCount == 0) return 0;
+        return ratingsData[tokenId].totalRating * RATING_PRECISION / ratingsData[tokenId].totalCount;
     }
 
     /**

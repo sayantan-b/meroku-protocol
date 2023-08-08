@@ -2,6 +2,9 @@ require("@nomicfoundation/hardhat-toolbox");
 require("@openzeppelin/hardhat-upgrades");
 require("@nomiclabs/hardhat-solhint");
 require("hardhat-gas-reporter");
+require("@nomiclabs/hardhat-ethers");
+// require("@nomiclabs/hardhat-waffle");
+
 require("dotenv/config");
 
 const accounts = {
@@ -73,7 +76,7 @@ module.exports = {
       gasMultiplier: 2,
     },
     mumbai: {
-      url: `https://matic-mumbai.chainstacklabs.com`,
+      url: `https://rpc.ankr.com/polygon_mumbai`,
       accounts: [process.env.PRIVATE_KEY], //add private key in this
       chainId: 80001,
       live: true,
@@ -81,6 +84,7 @@ module.exports = {
       tags: ["staging"],
       gasPrice: 30000000000,
       gasMultiplier: 2,
+      timeout: 100000
     },
     polygon: {
       url: `https://polygon-mainnet.chainstacklabs.com`,

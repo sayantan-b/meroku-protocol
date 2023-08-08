@@ -30,6 +30,12 @@ describe(".app & .dev NFT minting", function () {
       account2: "account2DevName",
       otherAccount: "otherAccountDevName",
     };
+    const devNameLower = {
+      owner: "ownerdevname",
+      account1: "account1devname",
+      account2: "account2devname",
+      otherAccount: "otheraccountdevname",
+    };
     const dev_uri = ".devNFT.com";
     const specialdAppNames = ["uniswap.app", "curve.app", "sushiswap.app"];
     const DappNameList = await ethers.getContractFactory("dappNameList");
@@ -38,9 +44,11 @@ describe(".app & .dev NFT minting", function () {
     await dappNameList.setDappNames(specialdAppNames);
     const DevNFT = await ethers.getContractFactory("DevNFTUpgradeable");
     const devNFT = await upgrades.deployProxy(DevNFT, [
+      dappNameList.address,
       process.env.TRUSTED_FORWARDER_ADDRESS,
     ]);
     await devNFT.deployed();
+    await devNFT.setPayForMintFlag(false);
     const appName = {
       owner: "ownerAppName",
       account1: "account1AppName",
@@ -78,6 +86,7 @@ describe(".app & .dev NFT minting", function () {
       account2,
       otherAccount,
       devName,
+      devNameLower,
       appName,
       appNameLower,
       dev_uri,
@@ -97,10 +106,10 @@ describe(".app & .dev NFT minting", function () {
   ) {
     const [owner, account1, account2, otherAccount] = await ethers.getSigners();
 
-    await devNFT.safeMintDevNFT(owner.address, devName.owner);
+    await devNFT.safeMintDevNFT(owner.address, dev_uri, devName.owner);
     await devNFT
       .connect(account1)
-      .safeMintDevNFT(account1.address, devName.account1);
+      .safeMintDevNFT(account1.address, dev_uri, devName.account1);
     await appNFT.safeMintAppNFT(owner.address, app_uri, appName.owner);
     await appNFT
       .connect(account1)
@@ -152,7 +161,6 @@ describe(".app & .dev NFT minting", function () {
           deployNFTsFixture
         );
 
-        // We use lock.connect() to send a transaction from another account
         await expect(
           devNFT
             .connect(otherAccount)
@@ -180,7 +188,7 @@ describe(".app & .dev NFT minting", function () {
         await expect(
           devNFT
             .connect(account1)
-            .safeMintDevNFT(account1.address, devName.account1)
+            .safeMintDevNFT(account1.address, dev_uri, devName.account1)
         ).not.to.be.reverted;
       });
 
@@ -191,13 +199,13 @@ describe(".app & .dev NFT minting", function () {
         // Called first time
         devNFT
           .connect(account1)
-          .safeMintDevNFT(account1.address, devName.account1);
+          .safeMintDevNFT(account1.address, dev_uri, devName.account1);
         // Caled second time
         await expect(
           devNFT
             .connect(account1)
-            .safeMintDevNFT(account1.address, devName.account1)
-        ).to.be.revertedWith("provided wallet already used to create app");
+            .safeMintDevNFT(account1.address, dev_uri, devName.account1)
+        ).to.be.revertedWith("provided wallet already used to create dev");
       });
 
       it("Should revert when the devName is already in use", async function () {
@@ -222,11 +230,11 @@ describe(".app & .dev NFT minting", function () {
           appName,
           appNameLower
         );
-        // We use lock.connect() to send a transaction from another account
+
         await expect(
           devNFT
             .connect(otherAccount)
-            .safeMintDevNFT(otherAccount.address, devName.owner)
+            .safeMintDevNFT(otherAccount.address, dev_uri, devName.owner)
         ).to.be.revertedWith("ERC721NameStorage: this Name already in use");
       });
     });
@@ -246,13 +254,112 @@ describe(".app & .dev NFT minting", function () {
     });
   });
 
+  describe("Transfer .devNFT", function () {
+    describe("Validations", function () {
+      it("Should revert with the right error if transferred to recipient who already owns .dev", async function () {
+        const { devNFT, account1, account2, otherAccount, devName, dev_uri, devNameLower } = await loadFixture(
+          deployNFTsFixture
+        );
+
+        await expect(
+          devNFT
+            .connect(account1)
+            .safeMintDevNFT(
+              account1.address,
+              devName.account1 + dev_uri,
+              devName.account1
+            )
+        ).not.to.be.reverted;
+
+        await expect(
+          devNFT
+            .connect(otherAccount)
+            .safeMintDevNFT(
+              otherAccount.address,
+              devName.otherAccount + dev_uri,
+              devName.otherAccount
+            )
+        ).not.to.be.reverted;
+
+        const tokenIDaccount1 = await devNFT.tokenIdForName(
+          `${devNameLower.account1}.dev`
+        );
+
+        const tokenIDotherAccount = await devNFT.tokenIdForName(
+          `${devNameLower.otherAccount}.dev`
+        );
+
+        await expect(
+          devNFT
+            .connect(account1)
+            .transferFrom(
+              account1.address,
+              otherAccount.address,
+              tokenIDaccount1
+            )
+        ).to.be.revertedWith("Recepient already owns a MerokuDev");
+
+        await expect(
+          devNFT
+            .connect(otherAccount)
+            .transferFrom(
+              otherAccount.address,
+              account2.address,
+              tokenIDotherAccount
+            )
+        ).not.to.be.reverted;
+
+        await expect(
+          devNFT
+            .connect(account1)
+            .transferFrom(
+              account1.address,
+              otherAccount.address,
+              tokenIDaccount1
+            )
+        ).not.to.be.reverted;
+      });
+
+      it("Should'nt fail when transferred to recipient who doesn't owns .dev", async function () {
+        const { devNFT, account1, otherAccount, devName, dev_uri, devNameLower } = await loadFixture(
+          deployNFTsFixture
+        );
+
+        await expect(
+          devNFT
+            .connect(account1)
+            .safeMintDevNFT(
+              account1.address,
+              devName.account1 + dev_uri,
+              devName.account1
+            )
+        ).not.to.be.reverted;
+
+        const tokenID = await devNFT.tokenIdForName(
+          `${devNameLower.account1}.dev`
+        );
+
+        await expect(
+          devNFT
+            .connect(account1)
+            .transferFrom(
+              account1.address,
+              otherAccount.address,
+              tokenID
+            )
+        ).not.to.be.reverted;
+
+        expect(await devNFT.ownerOf( tokenID )).to.equal(otherAccount.address);
+      });
+    })
+  })
+
   describe("Mint .appNFT", function () {
     describe("Validations", function () {
       it("Should revert with the right error if called from non-owner account in safeMint", async function () {
         const { appNFT, otherAccount, appName, appNameLower, app_uri } =
           await loadFixture(deployNFTsFixture);
 
-        // We use lock.connect() to send a transaction from another account
         await expect(
           appNFT
             .connect(otherAccount)
@@ -281,10 +388,11 @@ describe(".app & .dev NFT minting", function () {
           appName,
           appNameLower,
           app_uri,
+          dev_uri,
         } = await loadFixture(deployNFTsFixture);
         await devNFT
           .connect(account1)
-          .safeMintDevNFT(account1.address, devName.account1);
+          .safeMintDevNFT(account1.address, dev_uri, devName.account1);
         await expect(
           appNFT
             .connect(account1)
@@ -317,7 +425,7 @@ describe(".app & .dev NFT minting", function () {
 
         await devNFT
           .connect(account1)
-          .safeMintDevNFT(account1.address, devName.account1);
+          .safeMintDevNFT(account1.address, dev_uri, devName.account1);
         await expect(
           appNFT
             .connect(account1)
@@ -345,7 +453,7 @@ describe(".app & .dev NFT minting", function () {
         await appNFT.setMintManyFlag(true);
         await devNFT
           .connect(account1)
-          .safeMintDevNFT(account1.address, devName.account1);
+          .safeMintDevNFT(account1.address, dev_uri, devName.account1);
         await expect(
           appNFT
             .connect(account1)
@@ -389,8 +497,8 @@ describe(".app & .dev NFT minting", function () {
         );
         devNFT
           .connect(otherAccount)
-          .safeMintDevNFT(otherAccount.address, devName.otherAccount);
-        // We use lock.connect() to send a transaction from another account
+          .safeMintDevNFT(otherAccount.address, dev_uri, devName.otherAccount);
+
         await expect(
           appNFT
             .connect(otherAccount)
@@ -422,7 +530,7 @@ describe(".app & .dev NFT minting", function () {
         );
         await devNFT
           .connect(otherAccount)
-          .safeMintDevNFT(otherAccount.address, devName.otherAccount);
+          .safeMintDevNFT(otherAccount.address, dev_uri, devName.otherAccount);
 
         await expect(
           appNFT
@@ -455,7 +563,7 @@ describe(".app & .dev NFT minting", function () {
         );
         await devNFT
           .connect(otherAccount)
-          .safeMintDevNFT(otherAccount.address, devName.otherAccount);
+          .safeMintDevNFT(otherAccount.address, dev_uri, devName.otherAccount);
 
         await appNFT.setMintSpecialFlag(true);
         await expect(
@@ -483,7 +591,7 @@ describe(".app & .dev NFT minting", function () {
 
         await devNFT
           .connect(otherAccount)
-          .safeMintDevNFT(otherAccount.address, devName.otherAccount);
+          .safeMintDevNFT(otherAccount.address, dev_uri, devName.otherAccount);
 
         await expect(
           appNFT
@@ -517,7 +625,7 @@ describe(".app & .dev NFT minting", function () {
         );
         await devNFT
           .connect(otherAccount)
-          .safeMintDevNFT(otherAccount.address, devName.otherAccount);
+          .safeMintDevNFT(otherAccount.address, dev_uri, devName.otherAccount);
 
         await appNFT.setCheckDappNamesListFlag(false);
         await expect(

@@ -11,10 +11,12 @@ Current deployments are configured for mumbai(Polygon)
 npm run deployDappNameList  //to deploy .dappNameList contract
 npm run deployDevProxy      //to deploy .devNFT contract
 npm run deployAppProxy      //to deploy .appNFT contract
+npm run deployAppstoreProxy //to deploy .appStoreNFT contract
 
 npm run verifyDappNameList  //to verify .dappNameList contract
 npm run verifyDI            //to verify .devNFT contract
 npm run verifyAI            //to verify .appNFT contract
+npm run verifyASI           //to verify .appStoreNFT contract
 
 npm run addDappNames        //to add reserved dappNames in the list to avoid their minting in .appNFT
 

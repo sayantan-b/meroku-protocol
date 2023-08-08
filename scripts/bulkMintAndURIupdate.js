@@ -4,8 +4,9 @@ const fs = require('fs');
 const config = require("./config.json");
 const contractAddress = config.AppNFTUpgradeable;
 
-const startIndex = 0;
-const endIndex = 1;
+
+const startIndex = 1;
+const endIndex = 3;
 
 function validateDappId(dappId){
   if(dappId.length<4){
@@ -37,7 +38,7 @@ async function estimateGas(to,tokenId,dappId,tokenURI){
     console.log("gasCost:", gasCost.toString()," ~ gasCostInMATIC: ",gasCostInEth.toString());
     return gasEstimate.toString();
   }catch(e){
-    console.log("\nError in estimateGas: ",e.message)
+    console.log("\nError in estimateGas: ",e)
   }
 }
 
@@ -55,7 +56,7 @@ async function funcCall(to,tokenId,dappId,tokenURI){
 
 try{
   const results = [];
-  fs.createReadStream('scripts/data/info.csv')
+  fs.createReadStream('scripts/data/output.csv')
   .pipe(csv())
   .on('data', (data) => results.push(data))
   .on('end', async() => {
@@ -64,18 +65,46 @@ try{
       let dappId = [];
       let to = [];
       let tokenURI = [];
+      let uriUpdateCount = 0;
+      let mintCount = 0;
+      if(endIndex == 0){
+        endIndex = results.length;
+      } else if(endIndex > results.length){
+        throw new Error(`endIndex (${endIndex}) is greater than length of csv (${results.length})`);
+      } else if(startIndex > endIndex){
+        throw new Error(`startIndex (${startIndex}) is greater than endIndex (${endIndex})`);
+      }
 
-      for (let i = 0; i < results.length; i++) {
+      for (let i = startIndex; i < endIndex; i++) {
+        console.log("i",i, "dappId",results[i].dappId)
         validateDappId(results[i].dappId);
         tokenId.push(Number(results[i].tokenId));
+        if(Number(results[i].tokenId) == 0){
+          mintCount++;
+        }else{
+          uriUpdateCount++;
+        }
         dappId.push(results[i].dappId);
-        to.push(results[i].to);
+        if(results[i].to == ""){
+          to.push("0x0000000000000000000000000000000000000000");
+        }else{
+          if(to.includes(results[i].to)){
+            throw new Error(`Error in dappId '${results[i].dappId}' : Provided to address '${results[i].to}' is repeated`);
+          }
+          to.push(results[i].to);
+        }
         tokenURI.push(results[i].tokenURI);
       }
 
       if (tokenId.length === dappId.length && tokenId.length === to.length && tokenId.length === tokenURI.length) {
         console.log("Array lengths are equal, trxn good to go");
-        console.log("quantity",tokenId.length)
+        console.log("quantity: ",tokenId.length)
+        console.log("Total new mints : ",mintCount)
+        console.log("Total URI updates : ",uriUpdateCount)
+        // console.log("tokenId",tokenId)
+        // console.log("dappId",dappId)
+        // console.log("to",to)
+        // console.log("tokenURI",tokenURI)
       }
 
       if(startIndex==0 && endIndex==0){
@@ -83,10 +112,6 @@ try{
         await estimateGas(to,tokenId,dappId,tokenURI);
       }else{
         console.log("running estimateGas from index ",startIndex," to ",endIndex);
-        tokenId = tokenId.slice(startIndex,endIndex);
-        dappId = dappId.slice(startIndex,endIndex);
-        to = to.slice(startIndex,endIndex);
-        tokenURI = tokenURI.slice(startIndex,endIndex);
         await estimateGas(to,tokenId,dappId,tokenURI);
       }
 

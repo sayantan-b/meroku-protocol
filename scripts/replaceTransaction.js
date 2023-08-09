@@ -3,9 +3,9 @@ const { ethers, upgrades } = require("hardhat");
 async function main() {
   // Replace the stuck transaction
   const previousTxHash =
-    "0xec7c308c0ed9fc904e7519c1499bce5ab4ccd06539f8107d89988b38488911ae"; // Replace with your original transaction hash
+    "0xb85d06fe1d8c374c251a09a19e2df9a19d370e7063c1d8871932b7da8e3cd06b "; // Replace with your original transaction hash
   const previousTx = await ethers.provider.getTransaction(previousTxHash);
-  const newGasPrice = ethers.utils.parseUnits("200", "gwei"); // Replace with your desired gas price in gwei
+  const newGasPrice = ethers.utils.parseUnits("350", "gwei"); // Replace with your desired gas price in gwei
 
   console.log("Previous transaction:", previousTx);
   if (previousTx && previousTx.blockNumber === null) {

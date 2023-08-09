@@ -4145,6 +4145,7 @@
     "zigzag-exchange.dev",
     "zksync-wallet.dev",
     "co-nftdomains.dev",
-    "unilend-testnet.dev"
+    "unilend-testnet.dev",
+    "swapper-app.dev"
   ]
 }

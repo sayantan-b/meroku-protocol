@@ -26,8 +26,8 @@ interface IDappNameList {
 *  @dev This contract includes minting, burning, pausing, URI updates, and other functions
 *  @dev All function calls are currently implement without side effects
 */
-contract DevNFTUpgradeable is Initializable, ERC721Upgradeable, ERC721EnumerableUpgradeable, 
-                    ERC721URIStorageUpgradeable, PausableUpgradeable, OwnableUpgradeable, 
+contract DevNFTUpgradeable is Initializable, ERC721Upgradeable, ERC721EnumerableUpgradeable,
+                    ERC721URIStorageUpgradeable, PausableUpgradeable, OwnableUpgradeable,
                         ERC721BurnableUpgradeable, UUPSUpgradeable, ERC721NameStorageUpgradeable, ERC2771Recipient {
     using CountersUpgradeable for CountersUpgradeable.Counter;
 
@@ -59,12 +59,12 @@ contract DevNFTUpgradeable is Initializable, ERC721Upgradeable, ERC721Enumerable
     // flag to check if the minting is paid or not
     bool public payForMintFlag;
 
-    /// @custom:oz-upgrades-unsafe-allow constructor    
+    /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
     }
     function initialize(address dappNameListAddress_, address trustedForwarder_) initializer public {
-        __ERC721_init("devNFT", "devNFT");
+        __ERC721_init("MerokuDev", "MerokuDev");
         __ERC721Enumerable_init();
         __ERC721URIStorage_init();
         __Pausable_init();
@@ -103,7 +103,7 @@ contract DevNFTUpgradeable is Initializable, ERC721Upgradeable, ERC721Enumerable
     }
 
     /**
-     * @notice pauses all token transfers and approvals 
+     * @notice pauses all token transfers and approvals
      * @dev onlyOwner modifier is applied to the pause function
      */
     function pause() public onlyOwner {
@@ -111,7 +111,7 @@ contract DevNFTUpgradeable is Initializable, ERC721Upgradeable, ERC721Enumerable
     }
 
     /**
-     * @notice unpauses all token transfers and approvals 
+     * @notice unpauses all token transfers and approvals
      * @dev onlyOwner modifier is applied to the unpause function
      */
     function unpause() public onlyOwner {
@@ -149,11 +149,11 @@ contract DevNFTUpgradeable is Initializable, ERC721Upgradeable, ERC721Enumerable
      * @param devName the name of dev to set for the token
      */
     function safeMintDevNFT(address to, string memory uri, string calldata devName) external payable whenNotPaused {
-        
+
         if(payForMintFlag){
             require(msg.value >= mint_fees, "Insufficient mint fee");
         }
-        
+
         require(balanceOf(to)==0, "provided wallet already used to create dev");
         string memory validatedDevName = _validateName(devName);
         if(checkDappNamesListFlag){

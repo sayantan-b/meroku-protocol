@@ -17,8 +17,8 @@ describe(".app & .dev NFT minting", function () {
 
     const lockedAmount = ONE_GWEI;
     const unlockTime = (await time.latest()) + ONE_YEAR_IN_SECS;
-    const symbolOfDevNFT = "devNFT";
-    const nameOfDevNFT = "devNFT";
+    const symbolOfDevNFT = "MerokuDev";
+    const nameOfDevNFT = "MerokuDev";
     const symbolOfAppNFT = "appNFT";
     const nameOfAppNFT = "appNFT";
 

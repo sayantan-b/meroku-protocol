@@ -4146,6 +4146,8 @@
     "zksync-wallet.app",
     "co-nftdomains.app",
     "unilend-testnet.app",
-    "swapper-app.app"
+    "swapper-app.app",
+    "bitscrunch.app",
+    "boomland.app"
   ]
 }

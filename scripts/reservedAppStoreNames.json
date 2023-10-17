@@ -1,5 +1,6 @@
 {
-    "names":[
+    "whitelisted": 0,
+    "names":[ 
         "trooplabs.appStore",
         "unstoppablemarketplace.appStore",
         "misesbrowser.appStore",

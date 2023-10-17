@@ -82,7 +82,7 @@ module.exports = {
       live: true,
       saveDeployments: true,
       tags: ["staging"],
-      gasPrice: 30000000000,
+      gasPrice: 3000000000,
       gasMultiplier: 2,
       timeout: 100000
     },

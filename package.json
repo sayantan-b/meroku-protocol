@@ -27,7 +27,8 @@
     "upgradeAppProxy": "hardhat run scripts/upgradeAppProxy.js --network",
     "upgradeAppstoreProxy": "hardhat run scripts/upgradeAppstoreProxy.js --network",
     "replaceTrx": "hardhat run scripts/replaceTransaction.js --network",
-    "mintUpdate": "hardhat run scripts/bulkMintAndURIupdate.js --network"
+    "mintUpdate": "hardhat run scripts/bulkMintAndURIupdate.js --network",
+    "whitelist": "hardhat run scripts/whitelist.js --network"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^1.0.6",

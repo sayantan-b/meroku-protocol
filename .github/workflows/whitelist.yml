@@ -1,0 +1,47 @@
+name: Call Function on App Name Change
+
+on:
+  push:
+    paths:
+      - 'scripts/reservedAppStoreNames.json' 
+      - 'scripts/reservedDappNames.json' 
+      - 'scripts/reservedDevNames.json' 
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - run: npm ci
+      
+      - run: npm run build --if-present
+        env:
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+          POLYGONSCAN_API_KEY: ${{ secrets.POLYGONSCAN_API_KEY }}
+          COINMARKETCAP_API_KEY: ${{ secrets.COINMARKETCAP_API_KEY }}
+          TRUSTED_FORWARDER_ADDRESS: ${{ vars.TRUSTED_FORWARDER_ADDRESS }}
+          TRUSTED_FORWARDER_ADDRESS_POLYGON_MAINNET: ${{ vars.TRUSTED_FORWARDER_ADDRESS_POLYGON_MAINNET }}
+      
+      - name: Process Newly Added Names
+        run:  npm run whitelist polygon
+        env:
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+          POLYGONSCAN_API_KEY: ${{ secrets.POLYGONSCAN_API_KEY }}
+          COINMARKETCAP_API_KEY: ${{ secrets.COINMARKETCAP_API_KEY }}
+          TRUSTED_FORWARDER_ADDRESS: ${{ vars.TRUSTED_FORWARDER_ADDRESS }}
+          TRUSTED_FORWARDER_ADDRESS_POLYGON_MAINNET: ${{ vars.TRUSTED_FORWARDER_ADDRESS_POLYGON_MAINNET }}
+      

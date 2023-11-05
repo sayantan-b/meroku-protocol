@@ -1,0 +1,35 @@
+name: Whitelist Retool Dapps
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: 18.12.0
+    
+    - name: Install dependencies with yarn
+      run: yarn install
+
+    - name: Change directory to apps/server
+      run: cd scripts
+
+    - name: Set environment variables from secrets
+      run: |
+        touch .env
+        echo GOOGLE_CLIENT_EMAIL=${{ secrets.GOOGLE_CLIENT_EMAIL }} >> .env
+        echo RETOOL_DAPPS_SHEET_ID=${{ secrets.RETOOL_DAPPS_SHEET_ID }} >> .env
+        echo GOOGLE_PRIVATE_KEY=${{ secrets.GOOGLE_PRIVATE_KEY }} >> .env
+        cat .env
+
+    - name: Run the script with environment variable
+      run: node whitelistDapps.js
+      

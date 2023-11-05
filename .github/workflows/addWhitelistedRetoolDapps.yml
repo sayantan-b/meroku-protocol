@@ -19,7 +19,7 @@ jobs:
     - name: Install dependencies with yarn
       run: yarn install
 
-    - name: Change directory to apps/server
+    - name: Change directory to scripts
       run: cd scripts
 
     - name: Set environment variables from secrets
@@ -31,5 +31,5 @@ jobs:
         cat .env
 
     - name: Run the script with environment variable
-      run: node whitelistDapps.js
+      run: node scripts/whitelistDapps.js
       

@@ -31,5 +31,5 @@ jobs:
         cat .env
 
     - name: Run the script with environment variable
-      run: node scripts/whitelistDapps.js
+      run: node whitelistDapps.js
       

@@ -21,6 +21,9 @@ jobs:
 
     - name: Change directory to scripts
       run: cd scripts
+    
+    - name: current directory
+      run: pwd 
 
     - name: Set environment variables from secrets
       run: |

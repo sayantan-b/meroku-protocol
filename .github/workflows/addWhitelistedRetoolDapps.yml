@@ -2,7 +2,7 @@ name: Whitelist Retool Dapps
 
 on:
   schedule:
-    - cron: '*/10 * * * *'
+    - cron: '*/4 * * * *'
 
 jobs:
   run-script:
@@ -16,25 +16,9 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: 18.12.0
-  
-    - name: current directory Initial
-      run: pwd 
-      working-directory: ./scripts
-    
-    - name: list all files
-      run: ls -la
-      working-directory: ./scripts
     
     - name: Install dependencies with yarn
       run: yarn install
-
-    - name: Change directory to scripts
-      run: cd scripts/
-      shell: bash
-    
-    - name: current directory
-      run: pwd 
-      shell: bash
 
     - name: Set environment variables from secrets
       run: |
@@ -43,10 +27,6 @@ jobs:
         echo RETOOL_DAPPS_SHEET_ID=${{ secrets.RETOOL_DAPPS_SHEET_ID }} >> .env
         echo GOOGLE_PRIVATE_KEY=${{ secrets.GOOGLE_PRIVATE_KEY }} >> .env
         cat .env
-      working-directory: ./scripts
-    
-    - name: list all files
-      run: ls -la
       working-directory: ./scripts
 
     - name: Run the script with environment variable

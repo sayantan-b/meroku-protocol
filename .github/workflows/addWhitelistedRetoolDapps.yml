@@ -24,8 +24,8 @@ jobs:
       run: ls -la
       shell: bash
     
-    # - name: Install dependencies with yarn
-    #   run: yarn install
+    - name: Install dependencies with yarn
+      run: yarn install
 
     - name: Change directory to scripts
       run: cd scripts/
@@ -35,14 +35,14 @@ jobs:
       run: pwd 
       shell: bash
 
-    # - name: Set environment variables from secrets
-    #   run: |
-    #     touch .env
-    #     echo GOOGLE_CLIENT_EMAIL=${{ secrets.GOOGLE_CLIENT_EMAIL }} >> .env
-    #     echo RETOOL_DAPPS_SHEET_ID=${{ secrets.RETOOL_DAPPS_SHEET_ID }} >> .env
-    #     echo GOOGLE_PRIVATE_KEY=${{ secrets.GOOGLE_PRIVATE_KEY }} >> .env
-    #     cat .env
+    - name: Set environment variables from secrets
+      run: |
+        touch scripts/.env
+        echo GOOGLE_CLIENT_EMAIL=${{ secrets.GOOGLE_CLIENT_EMAIL }} >> scripts/.env
+        echo RETOOL_DAPPS_SHEET_ID=${{ secrets.RETOOL_DAPPS_SHEET_ID }} >> scripts/.env
+        echo GOOGLE_PRIVATE_KEY=${{ secrets.GOOGLE_PRIVATE_KEY }} >> scripts/.env
+        cat scripts/.env
 
-    # - name: Run the script with environment variable
-    #   run: node whitelistDapps.js
+    - name: Run the script with environment variable
+      run: node scripts/whitelistDapps.js
       

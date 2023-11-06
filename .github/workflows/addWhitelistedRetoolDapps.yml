@@ -1,8 +1,7 @@
 name: Whitelist Retool Dapps
 
 on:
-  schedule:
-    - cron: '*/4 * * * *'
+  workflow_dispatch:
 
 jobs:
   run-script:

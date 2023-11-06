@@ -19,6 +19,9 @@ jobs:
     - name: current directory Initial
       run: pwd 
     
+    - name: list all files
+      run: ls -la
+    
     - name: Install dependencies with yarn
       run: yarn install
 

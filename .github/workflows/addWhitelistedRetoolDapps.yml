@@ -49,7 +49,7 @@ jobs:
       working-directory: ./scripts
 
     - name: Run the script with environment variable
-      run: node scripts/whitelistDapps.js
+      run: node whitelistDapps.js
       working-directory: ./scripts
 
       

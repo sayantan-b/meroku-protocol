@@ -42,6 +42,10 @@ jobs:
         echo RETOOL_DAPPS_SHEET_ID=${{ secrets.RETOOL_DAPPS_SHEET_ID }} >> scripts/.env
         echo GOOGLE_PRIVATE_KEY=${{ secrets.GOOGLE_PRIVATE_KEY }} >> scripts/.env
         cat scripts/.env
+    
+    - name: list all files
+      run: ls -la
+      shell: bash
 
     - name: Run the script with environment variable
       run: node scripts/whitelistDapps.js

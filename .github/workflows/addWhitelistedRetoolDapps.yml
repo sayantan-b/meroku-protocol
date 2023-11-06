@@ -18,18 +18,22 @@ jobs:
   
     - name: current directory Initial
       run: pwd 
+      shell: bash
     
     - name: list all files
       run: ls -la
+      shell: bash
     
     - name: Install dependencies with yarn
       run: yarn install
 
     - name: Change directory to scripts
       run: cd /test
+      shell: bash
     
     - name: current directory
       run: pwd 
+      shell: bash
 
     # - name: Set environment variables from secrets
     #   run: |

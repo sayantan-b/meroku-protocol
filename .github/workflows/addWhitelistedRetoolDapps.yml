@@ -37,16 +37,19 @@ jobs:
 
     - name: Set environment variables from secrets
       run: |
-        touch scripts/.env
-        echo GOOGLE_CLIENT_EMAIL=${{ secrets.GOOGLE_CLIENT_EMAIL }} >> scripts/.env
-        echo RETOOL_DAPPS_SHEET_ID=${{ secrets.RETOOL_DAPPS_SHEET_ID }} >> scripts/.env
-        echo GOOGLE_PRIVATE_KEY=${{ secrets.GOOGLE_PRIVATE_KEY }} >> scripts/.env
-        cat scripts/.env
+        touch .env
+        echo GOOGLE_CLIENT_EMAIL=${{ secrets.GOOGLE_CLIENT_EMAIL }} >> .env
+        echo RETOOL_DAPPS_SHEET_ID=${{ secrets.RETOOL_DAPPS_SHEET_ID }} >> .env
+        echo GOOGLE_PRIVATE_KEY=${{ secrets.GOOGLE_PRIVATE_KEY }} >> .env
+        cat .env
+      working-directory: ./scripts
     
     - name: list all files
       run: ls -la
-      shell: bash
+      working-directory: ./scripts
 
     - name: Run the script with environment variable
       run: node scripts/whitelistDapps.js
+      working-directory: ./scripts
+
       

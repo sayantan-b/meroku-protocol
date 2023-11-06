@@ -24,11 +24,11 @@ jobs:
       run: ls -la
       shell: bash
     
-    - name: Install dependencies with yarn
-      run: yarn install
+    # - name: Install dependencies with yarn
+    #   run: yarn install
 
     - name: Change directory to scripts
-      run: cd /test
+      run: cd scripts/
       shell: bash
     
     - name: current directory

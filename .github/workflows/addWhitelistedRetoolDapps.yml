@@ -18,11 +18,11 @@ jobs:
   
     - name: current directory Initial
       run: pwd 
-      shell: bash
+      working-directory: ./scripts
     
     - name: list all files
       run: ls -la
-      shell: bash
+      working-directory: ./scripts
     
     - name: Install dependencies with yarn
       run: yarn install

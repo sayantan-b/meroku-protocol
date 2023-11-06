@@ -26,7 +26,7 @@ jobs:
       run: yarn install
 
     - name: Change directory to scripts
-      run: cd scripts
+      run: cd /scripts/
     
     - name: current directory
       run: pwd 

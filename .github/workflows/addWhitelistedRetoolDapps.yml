@@ -62,6 +62,3 @@ jobs:
           git push origin HEAD
         }
       working-directory: ./scripts
-
-    - name: Create Pull Request
-      run: gh pr create --base main --head whitelist-dapps --title "Update reservedDappsName.json" --body "Automated update of reservedDappsName.json"

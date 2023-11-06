@@ -1,5 +1,5 @@
 {
-  "whitelisted": 4315,
+  "whitelisted": 4314,
   "names": [
     "cryptokitties.app",
     "larvalabs.app",
@@ -4314,7 +4314,6 @@
     "astro-space.app",
     "pages-app.app",
     "solcasino.app",
-    "raydium.app",
-    "sayantan.app"
+    "raydium.app"
   ]
 }
